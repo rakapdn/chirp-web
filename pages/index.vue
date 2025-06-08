@@ -1,6 +1,6 @@
 <script lang="ts">
 definePageMeta({
-  middleware: 'auth', // Terapkan middleware auth
+  middleware: 'auth',
 });
 </script>
 
@@ -15,6 +15,7 @@ definePageMeta({
 import { defineComponent } from 'vue';
 import CreatePost from '~/components/CreatePost.vue';
 import Feed from '~/components/Feed.vue';
+import { usePostStore } from '~/stores/post';
 import { useAuthStore } from '~/stores/auth';
 
 export default defineComponent({
@@ -23,18 +24,30 @@ export default defineComponent({
     CreatePost,
     Feed,
   },
-  props: {
-    newPost: String,
-    posts: Array,
-  },
-  emits: ['create-post'],
   setup() {
+    const postStore = usePostStore();
     const authStore = useAuthStore();
-    return { authStore };
+    return { postStore, authStore };
+  },
+  data() {
+    return {
+      newPost: '',
+    };
+  },
+  computed: {
+    posts() {
+      return this.postStore.posts;
+    },
+  },
+  async mounted() {
+    await this.postStore.fetchPosts();
   },
   methods: {
-    createPost() {
-      this.$emit('create-post');
+    async createPost() {
+      if (this.newPost.trim()) {
+        await this.postStore.createPost(this.newPost);
+        this.newPost = '';
+      }
     },
   },
 });
