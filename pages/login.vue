@@ -19,9 +19,10 @@ export default defineComponent({
     return { authStore };
   },
   methods: {
-    handleLogin(credentials: { username: string; password: string }) {
-      const success = this.authStore.login(credentials.username, credentials.password);
+    async handleLogin(credentials: { username: string; password: string }) {
+      const success = await this.authStore.login(credentials.username, credentials.password);
       if (success) {
+        await this.authStore.fetchUser(); // Perbarui data user setelah login
         this.$router.push('/');
       } else {
         alert('Username atau password salah!');
