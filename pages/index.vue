@@ -1,3 +1,9 @@
+<script lang="ts">
+definePageMeta({
+  middleware: 'auth', // Terapkan middleware auth
+});
+</script>
+
 <template>
   <div>
     <CreatePost v-model:new-post="newPost" @create-post="createPost" />
@@ -9,6 +15,7 @@
 import { defineComponent } from 'vue';
 import CreatePost from '~/components/CreatePost.vue';
 import Feed from '~/components/Feed.vue';
+import { useAuthStore } from '~/stores/auth';
 
 export default defineComponent({
   name: 'Home',
@@ -21,6 +28,10 @@ export default defineComponent({
     posts: Array,
   },
   emits: ['create-post'],
+  setup() {
+    const authStore = useAuthStore();
+    return { authStore };
+  },
   methods: {
     createPost() {
       this.$emit('create-post');
